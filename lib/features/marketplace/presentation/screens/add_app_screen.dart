@@ -213,26 +213,13 @@ class _AddAppScreenState extends ConsumerState<AddAppScreen> {
                   validator: (v) => v == null || v.isEmpty ? 'Required' : null,
                 ),
                 const SizedBox(height: 16),
-                TextFormField(
-                  controller: _packageController,
-                  readOnly: true,
-                  decoration: InputDecoration(
-                    labelText: 'Package Name',
-                    hintText: 'Auto-extracted from URL',
-                    prefixIcon: const Icon(Icons.code),
-                    filled: true,
-                    fillColor: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-                    helperText: 'This will be automatically filled when you paste the Play Store URL.',
-                  ),
-                  validator: (v) => v == null || v.isEmpty ? 'Please paste a valid Play Store URL first' : null,
-                ),
-                const SizedBox(height: 16),
+
                 TextFormField(
                   controller: _descriptionController,
                   maxLines: 3,
                   decoration: const InputDecoration(
-                    labelText: 'Description',
-                    hintText: 'Describe your app and testing requirements...',
+                    labelText: 'Testing Instruction',
+                    hintText: 'Describe how to test your app...',
                     prefixIcon: Icon(Icons.description_outlined),
                   ),
                 ),

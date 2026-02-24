@@ -5,7 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:sajuriyatester/features/auth/presentation/providers/auth_provider.dart';
 import 'package:sajuriyatester/features/profile/data/services/user_data_service.dart';
-import 'package:sajuriyatester/core/models/models.dart';
+import 'package:sajuriyatester/core/models/app_model.dart';
+import 'package:sajuriyatester/core/models/profile_model.dart';
 import 'package:sajuriyatester/core/widgets/skeleton_widgets.dart';
 import 'package:sajuriyatester/core/providers/common_providers.dart';
 
@@ -202,6 +203,29 @@ class MyAppsScreen extends ConsumerWidget {
                     Text(
                       app.packageName,
                       style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 12),
+                    ),
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.people_outline, size: 14, color: Theme.of(context).primaryColor),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${app.activeTesters ?? 0} Active Testers',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Theme.of(context).primaryColor,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

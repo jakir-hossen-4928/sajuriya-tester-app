@@ -8,7 +8,10 @@ import 'package:sajuriyatester/core/widgets/skeleton_widgets.dart';
 import 'package:sajuriyatester/features/auth/presentation/providers/auth_provider.dart';
 import 'package:sajuriyatester/core/config/supabase_config.dart';
 import 'package:sajuriyatester/features/tests/presentation/screens/my_tests_screen.dart';
-import 'package:sajuriyatester/core/models/models.dart';
+import 'package:sajuriyatester/core/models/app_model.dart';
+import 'package:sajuriyatester/core/models/profile_model.dart';
+import 'package:sajuriyatester/core/models/karma_transaction_model.dart';
+import 'package:sajuriyatester/core/models/test_assignment_model.dart';
 import 'package:sajuriyatester/core/providers/common_providers.dart';
 
 final marketplaceAppsProvider = AsyncNotifierProvider<MarketplaceNotifier, List<AppModel>>(() {
@@ -39,14 +42,20 @@ class MarketplaceNotifier extends AsyncNotifier<List<AppModel>> {
       debugPrint('[Marketplace] Background sync checking for updates...');
       final response = await SupabaseConfig.client
           .from('apps')
-          .select('*, profiles(*)')
+          .select('*, profiles(*), test_assignments(is_completed)')
           .eq('status', 'active')
           .order('created_at', ascending: false);
 
       final apps = (response as List).map((e) {
         try {
-          return AppModel.fromMap(e);
+          final Map<String, dynamic> data = Map<String, dynamic>.from(e);
+          // Calculate active testers (those who have NOT completed yet)
+          final assignments = data['test_assignments'] as List?;
+          final count = assignments?.where((a) => a['is_completed'] == false).length ?? 0;
+          data['active_testers_count'] = count;
+          return AppModel.fromMap(data);
         } catch (e) {
+          debugPrint('[Marketplace] Error parsing app ${e}');
           return null;
         }
       }).whereType<AppModel>().toList();
@@ -173,7 +182,7 @@ class MarketplaceScreen extends ConsumerWidget {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
-                      childAspectRatio: 0.75,
+                      childAspectRatio: 0.68, // Increased height to prevent overflow
                       crossAxisSpacing: 16,
                       mainAxisSpacing: 16,
                     ),
@@ -219,10 +228,11 @@ class MarketplaceScreen extends ConsumerWidget {
       child: InkWell(
         onTap: () => context.push('/app-details', extra: app),
         child: Container(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(16), // Reduced padding to save space
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(24),
-            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.4)),
+            border: Border.all(color: Theme.of(context).colorScheme.outlineVariant.withValues(alpha: 0.5)),
+            color: Theme.of(context).colorScheme.surfaceContainerLow, // Use distinct surface color
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -256,6 +266,22 @@ class MarketplaceScreen extends ConsumerWidget {
                 ),
                 maxLines: 1,
               ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                   Icon(Icons.people_alt_rounded,
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.8), size: 14),
+                  const SizedBox(width: 4),
+                  Text(
+                    '${(app.activeTesters ?? 0) + (app.completedTesters ?? 0)} total testers',
+                    style: TextStyle(
+                      fontSize: 11, 
+                      color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
               const Spacer(),
               Row(
                 children: [
@@ -264,8 +290,11 @@ class MarketplaceScreen extends ConsumerWidget {
                   const SizedBox(width: 4),
                   Text(
                     '${app.rewardCredits} Karma',
-                    style: const TextStyle(
-                        fontSize: 12, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                        fontSize: 12, 
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.onSurface,
+                    ),
                   ),
                 ],
               ),

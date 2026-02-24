@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/config/supabase_config.dart';
-import '../../../../core/models/models.dart';
+import '../../../../core/models/app_model.dart';
+import '../../../../core/models/test_assignment_model.dart';
 
 class TestService {
   SupabaseClient get _client => SupabaseConfig.client;

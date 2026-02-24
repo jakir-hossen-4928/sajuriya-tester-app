@@ -67,9 +67,9 @@ class AuthService {
       final payload = <String, dynamic>{
         'id': user.id,
         'updated_at': DateTime.now().toIso8601String(),
-        if (avatarUrl != null) 'avatar_url': avatarUrl,
-        if (fullName != null) 'full_name': fullName,
-        if (email != null) 'email': email,
+        'avatar_url': avatarUrl,
+        'full_name': fullName,
+        'email': email,
       };
 
       await _client.from('profiles').upsert(

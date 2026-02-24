@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:sajuriyatester/core/utils/app_checker.dart';
 import 'package:sajuriyatester/core/widgets/image_widgets.dart';
 import 'package:sajuriyatester/features/auth/presentation/providers/auth_provider.dart';
 import 'package:sajuriyatester/features/tests/presentation/screens/my_tests_screen.dart';
-import 'package:sajuriyatester/core/models/models.dart';
+import 'package:sajuriyatester/core/models/app_model.dart';
+import 'package:sajuriyatester/core/models/profile_model.dart';
 
 class AppDetailsScreen extends ConsumerStatefulWidget {
   final AppModel app;
@@ -31,6 +35,12 @@ class _AppDetailsScreenState extends ConsumerState<AppDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('App Details'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert),
+            onPressed: () => _showAppMenuSheet(context),
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -127,7 +137,7 @@ class _AppDetailsScreenState extends ConsumerState<AppDetailsScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Description',
+                    'Testing Instruction',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 12),
@@ -144,10 +154,15 @@ class _AppDetailsScreenState extends ConsumerState<AppDetailsScreen> {
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
+
                   _buildInfoTile(
                       Icons.code, 'Package Name', widget.app.packageName),
                   _buildInfoTile(
+                      Icons.people_outline, 'Active Testers', '${widget.app.activeTesters ?? 0} developers testing'),
+                  _buildInfoTile(
                       Icons.api, 'Status', widget.app.status.toUpperCase()),
+                  _buildInfoTile(
+                      Icons.calendar_today, 'Post on', DateFormat('MMM dd, yyyy').format(widget.app.createdAt)),
 
                   const SizedBox(height: 40),
 
@@ -406,5 +421,66 @@ class _AppDetailsScreenState extends ConsumerState<AppDetailsScreen> {
         );
       }
     }
+  }
+
+  void _showAppMenuSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.share),
+                  title: const Text('Share App'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _shareApp();
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.help_outline),
+                  title: const Text('Help & Support'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.pushNamed('help-support'); // Using the named route
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.report_problem_outlined, color: Colors.red),
+                  title: const Text('Report App', style: TextStyle(color: Colors.red)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    context.push('/report-app', extra: widget.app);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _shareApp() {
+    // Generate the deep link back to this screen.
+    // Assuming Play Store URL for Sajuriya Tester, or fallback to text.
+    final shareText = '''🔥 Check out "${widget.app.appName}" on Sajuriya Tester!
+
+Help fellow developers meet the Google Play 12-tester requirement and earn Karma for your own apps! 
+
+📲 Download Sajuriya Tester from the Play Store:
+https://play.google.com/store/apps/details?id=com.sajuriyaStudio.sajuriyatester
+
+🔗 Already installed? Open the test request directly:
+sajuriyatester://app-details?id=${widget.app.id}''';
+
+    Share.share(shareText);
   }
 }

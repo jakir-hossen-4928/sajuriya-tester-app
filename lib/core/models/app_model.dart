@@ -13,6 +13,8 @@ class AppModel {
   final String status;
   final DateTime createdAt;
   final Profile? developer; // Join with profiles
+  final int? activeTesters;
+  final int? completedTesters;
 
   AppModel({
     required this.id,
@@ -27,6 +29,8 @@ class AppModel {
     this.status = 'active',
     required this.createdAt,
     this.developer,
+    this.activeTesters,
+    this.completedTesters,
   });
 
   factory AppModel.fromMap(Map<String, dynamic> map) {
@@ -43,6 +47,8 @@ class AppModel {
       status: map['status'] ?? 'active',
       createdAt: DateTime.parse(map['created_at']),
       developer: map['profiles'] != null ? Profile.fromMap(map['profiles']) : null,
+      activeTesters: map['active_testers_count'],
+      completedTesters: map['completed_testers_count'],
     );
   }
 
@@ -60,6 +66,8 @@ class AppModel {
       'status': status,
       'created_at': createdAt.toIso8601String(),
       'profiles': developer?.toMap(),
+      'active_testers_count': activeTesters,
+      'completed_testers_count': completedTesters,
     };
   }
 }

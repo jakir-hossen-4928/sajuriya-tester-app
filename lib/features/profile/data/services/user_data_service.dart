@@ -1,7 +1,9 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/foundation.dart';
 import '../../../../core/config/supabase_config.dart';
-import '../../../../core/models/models.dart';
+import '../../../../core/models/app_model.dart';
+import '../../../../core/models/profile_model.dart';
+import '../../../../core/models/karma_transaction_model.dart';
 
 class ProfileService {
   SupabaseClient get _client => SupabaseConfig.client;
@@ -11,7 +13,7 @@ class ProfileService {
     String? fullName,
   }) async {
     final Map<String, dynamic> updates = {
-      'full_name': ?fullName,
+      if (fullName != null) 'full_name': fullName,
       'updated_at': DateTime.now().toIso8601String(),
     };
     debugPrint('[ProfileService] Updating profile for $userId: $updates');
@@ -91,21 +93,43 @@ class AppService {
     String? description,
   }) async {
     final Map<String, dynamic> updates = {
-      'app_name': ?appName,
-      'package_name': ?packageName,
-      'playstore_url': ?playStoreUrl,
-      'description': ?description,
+      if (appName != null) 'app_name': appName,
+      if (packageName != null) 'package_name': packageName,
+      if (playStoreUrl != null) 'playstore_url': playStoreUrl,
+      if (description != null) 'description': description,
     };
     await _client.from('apps').update(updates).eq('id', appId);
   }
 
   Future<List<AppModel>> getDeveloperApps(String developerId) async {
-    final response = await _client
-        .from('apps')
-        .select()
-        .eq('developer_id', developerId)
-        .order('created_at', ascending: false);
-    return (response as List).map((e) => AppModel.fromMap(e)).toList();
+    try {
+      final response = await _client
+          .from('apps')
+          .select('*, active_testers:test_assignments(count)')
+          .eq('developer_id', developerId)
+          .eq('test_assignments.is_completed', false)
+          .order('created_at', ascending: false);
+      
+      return (response as List).map((e) {
+        final Map<String, dynamic> data = Map<String, dynamic>.from(e);
+        final activeTesters = data['active_testers'] as List?;
+        final count = (activeTesters != null && activeTesters.isNotEmpty)
+            ? (activeTesters.first['count'] as int?) ?? 0
+            : 0;
+        
+        data['active_testers_count'] = count;
+        return AppModel.fromMap(data);
+      }).toList();
+    } catch (e) {
+      debugPrint('[AppService] Error fetching developer apps with counts: $e');
+      // Fallback to simple fetch if the complex query fails
+      final response = await _client
+          .from('apps')
+          .select()
+          .eq('developer_id', developerId)
+          .order('created_at', ascending: false);
+      return (response as List).map((e) => AppModel.fromMap(e)).toList();
+    }
   }
 
   Future<void> deleteApp(String appId) async {

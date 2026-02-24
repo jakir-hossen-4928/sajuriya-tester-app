@@ -71,10 +71,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     final user = ref.read(currentUserProvider);
     if (user == null) return;
 
+    final profile = ref.read(userProfileProvider(user.id)).value;
+    final newName = _nameController.text.trim();
+
+    // Check if user actually changed something
+    if (profile?.fullName == newName) {
+      setState(() => _isEditing = false);
+      return;
+    }
+
     try {
       await ref.read(profileServiceProvider).updateProfile(
             userId: user.id,
-            fullName: _nameController.text.trim(),
+            fullName: newName,
           );
       setState(() => _isEditing = false);
       if (mounted) {
@@ -242,11 +251,25 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (_isEditing)
-                  TextField(
-                    controller: _nameController,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-                    decoration: const InputDecoration(border: InputBorder.none, hintText: 'Full Name'),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 40),
+                    child: TextField(
+                      controller: _nameController,
+                      textAlign: TextAlign.center,
+                      autofocus: true,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                      decoration: InputDecoration(
+                        hintText: 'Full Name',
+                        enabledBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor.withValues(alpha: 0.5)),
+                        ),
+                        focusedBorder: UnderlineInputBorder(
+                          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2),
+                        ),
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onSubmitted: (_) => _updateProfile(),
+                    ),
                   )
                 else
                   Text(

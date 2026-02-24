@@ -4,9 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/admin_provider.dart';
 import 'package:sajuriyatester/core/widgets/skeleton_widgets.dart';
 
-final pendingCountsProvider = FutureProvider<Map<String, int>>((ref) async {
-  return ref.read(adminServiceProvider).getPendingCounts();
-});
+
 
 class AdminDashboard extends ConsumerWidget {
   const AdminDashboard({super.key});
@@ -14,7 +12,6 @@ class AdminDashboard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final stats = ref.watch(adminStatsProvider);
-    final pending = ref.watch(pendingCountsProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -23,7 +20,6 @@ class AdminDashboard extends ConsumerWidget {
           IconButton(
             onPressed: () {
               ref.invalidate(adminStatsProvider);
-              ref.invalidate(pendingCountsProvider);
             },
             icon: const Icon(Icons.refresh),
           ),
@@ -33,7 +29,6 @@ class AdminDashboard extends ConsumerWidget {
         child: RefreshIndicator(
         onRefresh: () async {
           ref.invalidate(adminStatsProvider);
-          ref.invalidate(pendingCountsProvider);
         },
         child: SingleChildScrollView(
           physics: const AlwaysScrollableScrollPhysics(),
@@ -77,16 +72,11 @@ class AdminDashboard extends ConsumerWidget {
               const SizedBox(height: 12),
               _buildActionCard(
                 context,
-                title: 'Test Verification',
-                subtitle: 'Verify completed test proofs',
-                icon: Icons.fact_check_outlined,
-                color: Colors.blue,
-                count: pending.when(
-                  data: (p) => p['completedTests']! > 0 ? p['completedTests'].toString() : null,
-                  loading: () => null,
-                  error: (e, s) => null,
-                ),
-                onTap: () {}, // Future implementation
+                title: 'App Reports',
+                subtitle: 'Review and manage app reports',
+                icon: Icons.report_problem_outlined,
+                color: Colors.redAccent,
+                onTap: () => context.push('/admin/reports'),
               ),
             ],
           ),
@@ -108,7 +98,7 @@ class AdminDashboard extends ConsumerWidget {
         _buildStatCard(context, 'Total Users', data['totalUsers'].toString(), Icons.people_outline),
         _buildStatCard(context, 'Active Apps', data['activeApps'].toString(), Icons.rocket_launch_outlined),
         _buildStatCard(context, 'Tests Done', data['completedTests'].toString(), Icons.check_circle_outline),
-        _buildStatCard(context, 'Total Karma', data['totalKarma'].toString(), Icons.stars_rounded),
+        _buildStatCard(context, 'App Reports', (data['totalReports'] ?? 0).toString(), Icons.report_problem_outlined),
       ],
     );
   }

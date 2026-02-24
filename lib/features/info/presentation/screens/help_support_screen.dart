@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:go_router/go_router.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class HelpSupportScreen extends StatelessWidget {
   const HelpSupportScreen({super.key});
@@ -21,18 +23,25 @@ class HelpSupportScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const SizedBox(height: 40),
-            Center(
+Center(
               child: Container(
                 height: 100,
                 width: 100,
                 decoration: BoxDecoration(
-                  color: colorScheme.primary.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
+                  color: colorScheme.surface,
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.05),
+                      blurRadius: 20,
+                      offset: const Offset(0, 10),
+                    ),
+                  ],
+                  border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.2)),
                 ),
-                child: Icon(
-                  Icons.radar_rounded,
-                  size: 50,
-                  color: colorScheme.primary,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset('asstes/icons/app_icon.png', fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -61,7 +70,7 @@ class HelpSupportScreen extends StatelessWidget {
             _buildAboutCard(
               context,
               'Our Mission',
-              'Connecting developers with real testers to fulfill Google Play\'s 20-tester requirement, fostering a community of mutual growth and support.',
+              'Connecting developers with real testers to fulfill Google Play\'s 12-tester requirement, fostering a community of mutual growth and support.',
               Icons.rocket_launch_rounded,
             ),
             _buildAboutCard(
@@ -86,7 +95,7 @@ class HelpSupportScreen extends StatelessWidget {
               icon: Icons.description_rounded,
               title: 'Documentation',
               subtitle: 'Read our guides on setting up your Play Console.',
-              onTap: () => _launchURL('https://sajuriya-tester.web.app/docs'), // Placeholder for web docs
+              onTap: () => context.push('/documentation'),
             ),
             const SizedBox(height: 32),
             _buildSectionHeader(context, 'Contact Us'),
@@ -101,10 +110,11 @@ class HelpSupportScreen extends StatelessWidget {
             const SizedBox(height: 12),
             _buildSupportCard(
               context,
-              icon: Icons.chat_bubble_rounded,
+              icon: FontAwesomeIcons.telegram,
               title: 'Telegram Support',
               subtitle: 'Fastest way to get help from our team.',
               onTap: () => _launchURL('https://t.me/jakirhossen4928'),
+              iconColor: const Color(0xFF26A5E4), // Telegram Blue
             ),
             const SizedBox(height: 48),
             Center(
@@ -164,6 +174,7 @@ class HelpSupportScreen extends StatelessWidget {
     required String title,
     required String subtitle,
     required VoidCallback onTap,
+    Color? iconColor,
   }) {
     final colorScheme = Theme.of(context).colorScheme;
 
@@ -190,7 +201,11 @@ class HelpSupportScreen extends StatelessWidget {
                     color: colorScheme.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: colorScheme.primary, size: 24),
+                  child: Icon(
+                    icon, 
+                    color: iconColor ?? colorScheme.primary, 
+                    size: 24,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(

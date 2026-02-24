@@ -8,13 +8,14 @@ import 'package:sajuriyatester/core/theme/theme_provider.dart';
 import 'package:sajuriyatester/features/auth/presentation/screens/splash_screen.dart';
 import 'package:sajuriyatester/features/auth/presentation/screens/auth_screen.dart';
 import 'package:sajuriyatester/features/auth/presentation/providers/auth_provider.dart';
-import 'package:sajuriyatester/core/models/models.dart';
+import 'package:sajuriyatester/core/models/app_model.dart';
 
 import 'package:sajuriyatester/features/marketplace/presentation/screens/marketplace_screen.dart';
 import 'package:sajuriyatester/features/marketplace/presentation/screens/my_apps_screen.dart';
 import 'package:sajuriyatester/features/marketplace/presentation/screens/add_app_screen.dart';
 import 'package:sajuriyatester/features/marketplace/presentation/screens/edit_app_screen.dart';
 import 'package:sajuriyatester/features/marketplace/presentation/screens/app_details_screen.dart';
+import 'package:sajuriyatester/features/marketplace/presentation/screens/report_app_screen.dart';
 import 'package:sajuriyatester/features/tests/presentation/screens/my_tests_screen.dart';
 import 'package:sajuriyatester/features/wallet/presentation/screens/wallet_screen.dart';
 import 'package:sajuriyatester/features/profile/presentation/screens/profile_screen.dart';
@@ -22,6 +23,7 @@ import 'package:sajuriyatester/features/navigation/presentation/main_navigation_
 import 'package:sajuriyatester/features/admin/presentation/screens/admin_dashboard.dart';
 import 'package:sajuriyatester/features/admin/presentation/screens/app_moderation_screen.dart';
 import 'package:sajuriyatester/features/admin/presentation/screens/admin_users_screen.dart';
+import 'package:sajuriyatester/features/admin/presentation/screens/admin_reports_screen.dart';
 import 'package:sajuriyatester/features/info/presentation/screens/documentation_screen.dart';
 import 'package:sajuriyatester/features/info/presentation/screens/privacy_policy_screen.dart';
 import 'package:sajuriyatester/features/info/presentation/screens/about_screen.dart';
@@ -246,6 +248,14 @@ final routerProvider = Provider<GoRouter>((ref) {
         },
       ),
       GoRoute(
+        path: '/report-app',
+        builder: (context, state) {
+          final app = state.extra as AppModel?;
+          if (app == null) return const MarketplaceScreen();
+          return ReportAppScreen(app: app);
+        },
+      ),
+      GoRoute(
         path: '/documentation',
         name: 'documentation',
         builder: (context, state) => const DocumentationScreen(),
@@ -277,6 +287,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: 'users',
             builder: (context, state) => const AdminUsersScreen(),
+          ),
+          GoRoute(
+            path: 'reports',
+            builder: (context, state) => const AdminReportsScreen(),
           ),
         ],
       ),

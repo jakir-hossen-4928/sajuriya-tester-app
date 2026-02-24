@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 ///
 /// This works by using Android's PackageManager.getPackageInfo() for a specific
 /// package name, which only requires declaring the package in AndroidManifest.xml
-/// using <queries> tags (or the app can query its own package).
+/// using `queries` tags (or the app can query its own package).
 ///
 /// For checking arbitrary packages at runtime, we use a MethodChannel approach
 /// that catches NameNotFoundException instead of querying all packages.

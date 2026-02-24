@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/models.dart';
+import '../models/app_model.dart';
+import '../models/profile_model.dart';
+import '../models/karma_transaction_model.dart';
+import '../models/test_assignment_model.dart';
 
 class LocalCacheService {
   static const String _boxMarketplace = 'marketplace_apps';
@@ -9,6 +12,7 @@ class LocalCacheService {
   static const String _boxMyApps = 'my_apps';
   static const String _boxTransactions = 'karma_transactions';
   static const String _boxProfile = 'user_profile';
+  static const String _boxGeneralData = 'general_data';
 
   Future<void> init() async {
     await Hive.initFlutter();
@@ -20,6 +24,7 @@ class LocalCacheService {
       Hive.openBox(_boxMyApps),
       Hive.openBox(_boxTransactions),
       Hive.openBox(_boxProfile),
+      Hive.openBox(_boxGeneralData),
     ]);
     debugPrint('[LocalCache] Hive initialized and boxes opened.');
   }
@@ -167,6 +172,7 @@ class LocalCacheService {
       Hive.box(_boxMyApps).clear(),
       Hive.box(_boxTransactions).clear(),
       Hive.box(_boxProfile).clear(),
+      Hive.box(_boxGeneralData).clear(),
     ]);
     debugPrint('[LocalCache] All local storage cleared.');
   }
@@ -192,6 +198,25 @@ class LocalCacheService {
       return Profile.fromMap(Map<String, dynamic>.from(data as Map));
     } catch (e) {
       debugPrint('[LocalCache] Error reading profile sync: $e');
+      return null;
+    }
+  }
+
+  Future<void> saveString(String key, String value) async {
+    try {
+      final box = Hive.box(_boxGeneralData);
+      await box.put(key, value);
+    } catch (e) {
+      debugPrint('[LocalCache] Error saving string: $e');
+    }
+  }
+
+  Future<String?> getString(String key) async {
+    try {
+      final box = Hive.box(_boxGeneralData);
+      return box.get(key) as String?;
+    } catch (e) {
+      debugPrint('[LocalCache] Error reading string: $e');
       return null;
     }
   }

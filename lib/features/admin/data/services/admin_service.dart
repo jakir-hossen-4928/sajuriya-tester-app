@@ -9,6 +9,7 @@ class AdminService {
     final usersRes = await _client.from('profiles').select('id');
     final appsRes = await _client.from('apps').select('id').eq('status', 'active');
     final testsRes = await _client.from('test_assignments').select('id').eq('is_completed', true);
+    final reportsRes = await _client.from('app_reports').select('id');
     
     // Summing karma
     final karmaRes = await _client.from('profiles').select('credits');
@@ -21,6 +22,7 @@ class AdminService {
       'totalUsers': usersRes.length,
       'activeApps': appsRes.length,
       'completedTests': testsRes.length,
+      'totalReports': reportsRes.length,
       'totalKarma': totalKarma,
     };
   }

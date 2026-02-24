@@ -35,9 +35,9 @@ class AboutScreen extends StatelessWidget {
                   ],
                   border: Border.all(color: colorScheme.outlineVariant.withValues(alpha: 0.2)),
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: Icon(Icons.hub_rounded, size: 60, color: colorScheme.primary),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset('asstes/icons/app_icon.png', fit: BoxFit.cover),
                 ),
               ),
             ),
@@ -74,7 +74,7 @@ class AboutScreen extends StatelessWidget {
                 child: Column(
                   children: [
                     Text(
-                      'Solving the 20-Tester Block',
+                      'Solving the 12-Tester Block',
                       style: GoogleFonts.poppins(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -83,7 +83,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Sajuriya Tester is a community platform built to help solo developers meet Google Play\'s mandatory 20-tester requirement. We use a "Mutual Help" model—you test apps to earn Karma, and use that Karma to get testers for your own apps.',
+                      'Sajuriya Tester is a community platform built to help solo developers meet Google Play\'s mandatory 12-tester requirement. We use a "Mutual Help" model—you test apps to earn Karma, and use that Karma to get testers for your own apps.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.inter(
                         fontSize: 15,

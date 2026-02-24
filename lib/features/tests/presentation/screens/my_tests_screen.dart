@@ -461,11 +461,12 @@ class _MyTestsScreenState extends ConsumerState<MyTestsScreen> {
                   child: ElevatedButton(
                     onPressed: (_isVerifying || !canVerify) ? null : () => _handleTestCompletion(assignment),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: canVerify ? Theme.of(context).primaryColor : Colors.grey[300],
-                      foregroundColor: canVerify ? Colors.white : Colors.grey[600],
+                      backgroundColor: canVerify ? Theme.of(context).primaryColor : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      foregroundColor: canVerify ? Colors.white : Theme.of(context).colorScheme.onSurface,
                       elevation: 0,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                      disabledBackgroundColor: canVerify ? Theme.of(context).primaryColor.withValues(alpha: 0.5) : Colors.grey[200],
+                      disabledBackgroundColor: canVerify ? Theme.of(context).primaryColor.withValues(alpha: 0.5) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.1),
+                      disabledForegroundColor: canVerify ? Colors.white.withValues(alpha: 0.7) : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                     child: _isVerifying
                         ? const SizedBox(
